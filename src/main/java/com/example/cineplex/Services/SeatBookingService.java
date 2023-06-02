@@ -23,7 +23,6 @@ public class SeatBookingService {
 			SeatBooking seatBooking = new SeatBooking();
 			seatBooking.setMovieShowtimeId(seatBookingDTO.getMovieShowtimeId());
 			seatBooking.setUserId(seatBookingDTO.getUserId());
-			System.out.println(seatId);
 			seatBooking.setSeatId(seatId);
 			seatBookingRepository.save(seatBooking);
 		}
