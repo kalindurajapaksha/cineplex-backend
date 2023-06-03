@@ -1,14 +1,9 @@
 package com.example.cineplex.Controllers;
 
-import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.BadCredentialsException;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -19,7 +14,6 @@ import com.example.cineplex.JwtTokenUtil;
 import com.example.cineplex.DTOs.AuthRequest;
 import com.example.cineplex.Entities.User;
 import com.example.cineplex.Services.UserService;
-import com.example.cineplex.DTOs.AuthResponse;
 
 import jakarta.validation.Valid;
 
@@ -44,18 +38,18 @@ public class UserController {
 	}
 	
 	@RequestMapping(value="/", method=RequestMethod.GET)
-	public List<User> readUsers() {
+	public ResponseEntity<?> readUsers() {
 	    return userService.getUsers();
 	}
 	
 	@RequestMapping(value="/{userId}", method=RequestMethod.PUT)
-	public User updateUser(@PathVariable(value="userId") Long id, @RequestBody User userDetails) {
+	public ResponseEntity<?> updateUser(@PathVariable(value="userId") Long id, @RequestBody User userDetails) {
 	    return userService.updateUser(id, userDetails);
 	}
 	
 	@RequestMapping(value="/{userId}", method=RequestMethod.DELETE)
-	public void deleteUser(@PathVariable(value="userId") Long id) {
-	     userService.deleteUser(id);
+	public ResponseEntity<?> deleteUser(@PathVariable(value="userId") Long id) {
+	     return userService.deleteUser(id);
 	}
 	
     @RequestMapping(value="/auth/login", method=RequestMethod.POST)

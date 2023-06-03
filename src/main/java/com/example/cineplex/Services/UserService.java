@@ -1,6 +1,5 @@
 package com.example.cineplex.Services;
 
-import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,70 +21,86 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 @Service
 public class UserService {
 
-	@Autowired
-	UserRepository userRepository;
+    @Autowired
+    UserRepository userRepository;
 
-	@Autowired
-	AuthenticationManager authenticationManager;
+    @Autowired
+    AuthenticationManager authenticationManager;
 
-	@Autowired
-	JwtTokenUtil jwtTokenUtil;
+    @Autowired
+    JwtTokenUtil jwtTokenUtil;
 
-	public ResponseEntity<?> createUser(User user) {
-		try {
-			Optional<User> dbUser = userRepository.findByEmail(user.getEmail());
-			if (dbUser.isPresent()) {
-				return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
-			}
+    public ResponseEntity<?> createUser(User user) {
+        try {
+            Optional<User> dbUser = userRepository.findByEmail(user.getEmail());
+            if (dbUser.isPresent()) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+            }
 
-			BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
-			user.setPassword(passwordEncoder.encode(user.getPassword()));
-			User savedUser = userRepository.save(user);
-			return ResponseEntity.ok().body(savedUser);
-		} catch (Exception ex) {
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-		}
+            BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+            user.setPassword(passwordEncoder.encode(user.getPassword()));
+            User savedUser = userRepository.save(user);
+            return ResponseEntity.ok().body(savedUser);
+        } catch (Exception ex) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
 
-	}
+    }
 
-	public List<User> getUsers() {
-		return userRepository.findAll();
-	}
+    public ResponseEntity<?> getUsers() {
+        try {
+            return ResponseEntity.ok().body(userRepository.findAll());
+        } catch (Exception ex) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
 
-	public User getUser(Long userId) {
-		return userRepository.findById(userId).get();
-	}
+    public ResponseEntity<?> getUser(Long userId) {
+        try {
+            return ResponseEntity.ok().body(userRepository.findById(userId).get());
+        } catch (Exception ex) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
 
-	public void deleteUser(Long userId) {
-		userRepository.deleteById(userId);
-	}
+    public ResponseEntity<?> deleteUser(Long userId) {
+        try {
+            userRepository.deleteById(userId);
+            return ResponseEntity.ok().body(userId);
+        } catch (Exception ex) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
 
-	public User updateUser(Long userId, User userDetails) {
-		User user = userRepository.findById(userId).get();
-		user.setFirstName(userDetails.getFirstName());
-		user.setLastName(userDetails.getLastName());
-		user.setType(userDetails.getType());
+    public ResponseEntity<?> updateUser(Long userId, User userDetails) {
+        try {
+            User user = userRepository.findById(userId).get();
+            user.setFirstName(userDetails.getFirstName());
+            user.setLastName(userDetails.getLastName());
+            user.setType(userDetails.getType());
+            return ResponseEntity.ok().body(userRepository.save(user));
+        } catch (Exception ex) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
 
-		return userRepository.save(user);
-	}
+    public ResponseEntity<?> login(String email, String password) {
+        try {
+            Authentication authentication = authenticationManager
+                    .authenticate(new UsernamePasswordAuthenticationToken(email, password));
 
-	public ResponseEntity<?> login(String email, String password) {
-		try {
-			Authentication authentication = authenticationManager
-					.authenticate(new UsernamePasswordAuthenticationToken(email, password));
+            User user = (User) authentication.getPrincipal();
 
-			User user = (User) authentication.getPrincipal();
+            String accessToken = jwtTokenUtil.generateAccessToken(user);
+            AuthResponse response = new AuthResponse(user.getEmail(), accessToken);
 
-			String accessToken = jwtTokenUtil.generateAccessToken(user);
-			AuthResponse response = new AuthResponse(user.getEmail(), accessToken);
+            return ResponseEntity.ok().body(response);
 
-			return ResponseEntity.ok().body(response);
-
-		} catch (BadCredentialsException ex) {
-			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-		} catch (Exception ex) {
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-		}
-	}
+        } catch (BadCredentialsException ex) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        } catch (Exception ex) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
 
 }
