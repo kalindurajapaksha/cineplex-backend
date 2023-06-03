@@ -1,8 +1,7 @@
 package com.example.cineplex.Controllers;
 
-import java.util.List;
-
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -10,7 +9,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.cineplex.DTOs.CreateMovieDTO;
-import com.example.cineplex.DTOs.MovieDTO;
 import com.example.cineplex.Entities.Movie;
 import com.example.cineplex.Services.MovieService;
 
@@ -22,27 +20,27 @@ public class MovieController {
 	MovieService movieService;
 	
 	@RequestMapping(value="/", method=RequestMethod.POST)
-	public Movie createMovie(@RequestBody CreateMovieDTO movieDTO) {
+	public ResponseEntity<?> createMovie(@RequestBody CreateMovieDTO movieDTO) {
 	    return movieService.createMovie(movieDTO);
 	}
 	
 	@RequestMapping(value="/add", method=RequestMethod.POST)
-	public void createBulkMovies(@RequestBody Movie[] movies) {
-	     movieService.createBulkMovies(movies);
+	public ResponseEntity<?> createBulkMovies(@RequestBody Movie[] movies) {
+	     return movieService.createBulkMovies(movies);
 	}
 	
 	@RequestMapping(value="/{movieId}", method=RequestMethod.GET)
-	public MovieDTO getMovie(@PathVariable(value="movieId") Long id) {
+	public ResponseEntity<?> getMovie(@PathVariable(value="movieId") Long id) {
 		return movieService.getMovie(id);
 	}
 	
 	@RequestMapping(value="/", method=RequestMethod.GET)
-	public List<Movie> readMovies() {
+	public ResponseEntity<?> readMovies() {
 	    return movieService.getMovies();
 	}
 	
 	@RequestMapping(value="/{movieId}", method=RequestMethod.PUT)
-	public Movie updateMovie(@PathVariable(value="movieId") Long id, @RequestBody Movie movieDetails) {
+	public ResponseEntity<?> updateMovie(@PathVariable(value="movieId") Long id, @RequestBody Movie movieDetails) {
 	    return movieService.updateMovie(id, movieDetails);
 	}
 	
