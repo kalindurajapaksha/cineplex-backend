@@ -108,6 +108,10 @@ public class MovieService {
 
     public ResponseEntity<?> deleteMovie(Long movieId) {
         try {
+        	int numberOfBookings = movieRepository.findSeatBookingsCountForMovie(movieId).size();
+        	if (numberOfBookings == 0) {
+        		movieShowtimeRepository.deleteByMovieId(movieId);
+        	}
             movieRepository.deleteById(movieId);
             return ResponseEntity.ok().body(movieId);
         } catch (Exception ex) {
