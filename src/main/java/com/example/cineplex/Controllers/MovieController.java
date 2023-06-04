@@ -45,7 +45,7 @@ public class MovieController {
 	}
 	
 	@RequestMapping(value="/{movieId}", method=RequestMethod.DELETE)
-	public void deleteMovie(@PathVariable(value="movieId") Long id) {
-		movieService.deleteMovie(id);
+	public ResponseEntity<?> deleteMovie(@PathVariable(value="movieId") Long id) {
+		return movieService.deleteMovie(id);
 	}
 }
